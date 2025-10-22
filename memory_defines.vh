@@ -1,0 +1,8 @@
+`ifndef MEM_DEFINES
+`define MEM_DEFINES
+
+`define MEM_BASE_ADDR_DEF 32'h1000
+`define MEM_NUM_WORDS_DEF 1024
+`define MEM_NUM_BITS_DEF  32
+
+`endif
