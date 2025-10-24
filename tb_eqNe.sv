@@ -1,35 +1,67 @@
 `timescale 1ps/1ps
-// `include "common.vh"
-// `include "eqNE_.sv"
+
 
 module tb_eqNe();
 
-localparam NUM_BITS = 32;
+logic halt, exception, clk, rst_;
 
-logic [NUM_BITS - 1 : 0] data1, data2;
-logic eq, ne;
-
-// Instantiate the DUT
-eqNE_ #(.NUM_BITS(NUM_BITS)) dut (
-    .data1(data1),
-    .data2(data2),
-    .equal(eq),
-    .not_equal(ne)
-);
+cpu3 dut(
+    .halt       (halt),
+    .exception  (exception),
+    .clk        (clk),
+    .rst_       (rst_)
+)
 
 initial begin
-    $dumpfile("tb_eqNe.vcd");
-    $dumpvars(0, tb_eqNe);
+    $display("starting test");
 
-    data1 = {32'd16};
-    data2 = 32'd32;
-    #20;
-    data1 = 32'd32;
-    data2 = 32'd32;
-    #20;
-
-    $display("test complete");
-    $finish;
+    rst_ =      1'b0;
+    $display("reset is being set to %d\n", rst_);
+    halt =      1'b0;
+    display("halt is beging set to %d\n", halt);
+    exception = 1'b0;
+    display("halt is beging set to %d\n", exception);
 end
+
+//clk cycle
+always begin
+
+    clk =   1'b1;
+    #1
+    clk =    1'b0;
+
+end    
+
+
+//main tb logic
+
+always begin
+
+    #3
+    rst_ =      1'b0;
+    $display("reset is being set to %d\n", rst_);
+    exception = 1'b1; #5
+    
+    exception = 1'b0;
+    #5
+
+    halt = 1'b0;
+    #5
+    halt = 1'b1;
+    #15
+
+end    
+
+//finish block of always
+always begin
+
+
+#50, $display("test over, stopping test");
+$finish;
+
+
+end    
+
+
 
 endmodule

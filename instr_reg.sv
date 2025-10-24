@@ -146,6 +146,9 @@ always @ ( * )         // here for debugging
   //assign waddr      = (i_type == ONE) ? rt : rd; // if itype waddr is rt, else it is rd
 
    assign waddr = (jal) ? RA_REG : (r_type) ? rd : rt;//destination
+  //swap set to shamt 16
+  assign shamt = (swap) ? SWAP_SET_SHAMT : instr[SH_LEFT -: SHIFT_BITS];
+
 
   // Decode
   always @ (*)
@@ -357,7 +360,7 @@ always @ ( * )         // here for debugging
   //to be set to ALU_SLL
   LUI: begin
     rw_        = ZERO;
-    alu_op     = ALU_ADD; 
+    alu_op     = ALU_SLL; 
     alu_imm    = ONE;
     swap       = ONE;
   end

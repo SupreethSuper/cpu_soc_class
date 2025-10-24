@@ -33,7 +33,8 @@ module cpu3
    logic [BITS-1:0]            sign_ext_imm; // immediate data that has been sign extended
    logic                       signed_ext;   // whether or not to extend the sign bit
    logic [ 3:0]                byte_en;      // byte enables
-   logic                       swap;         // swap low 16 bits to high 16 bits
+
+   //logic                       swap;         // swap low 16 bits to high 16 bits
    logic                       load_link_;   // load the link register
    logic                       check_link;   // check if link register is same as address
    logic                       atomic;       // force value to 0 or 1 for atomic operation
@@ -109,16 +110,12 @@ module cpu3
 
    // select the data to write to the register file:
 
-     assign reg_wdata = (sel_mem)   ? 
-                                       d_mem_rdata : //sel_mem true
-                                       (atomic) // sel_mem false   
-                                       ? 
-                                       ({{{(BITS-1)}{1'b0}}, ~link_rw_}) :
-			                                                                  
-                                       (swap) 
-                                       // ? 
-                                       // {alu_out[15:0], alu_out[31:16]} :
-                                       // alu_out;
+assign reg_wdata = (sel_mem) ? 
+                      d_mem_rdata :
+                      (atomic) ?
+                          ({{{(BITS-1)}{1'b0}}, ~link_rw_}) :
+                          alu_out;
+
 
 
    // the register file
