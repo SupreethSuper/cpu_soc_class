@@ -187,6 +187,44 @@ pipe_id_ex pipe_id_ex_inst (
    .halt_s3(halt_s3)
 );
 
+pipe_ex_mem pipe_ex_mem_inst (
+    .clk(clk),
+    .rst_(rst_),
+    .atomic_s3(atomic_s3),
+    .sel_mem_s3(sel_mem_s3),
+    .check_link_s3(check_link_s3),
+    .mem_rw_s3(mem_rw_s3),
+    .rw_s3(rw_s3),
+    .waddr_s3(waddr_s3),
+    .load_link_s3(load_link_s3),
+    .r1_data_s3(r1_data_s3),
+    .r2_data_s3(r2_data_s3),
+    .alu_imm_s3(alu_imm_s3),
+    .sign_ext_imm_s3(sign_ext_imm_s3),
+    .shamt_s3(shamt_s3),
+    .alu_op_s3(alu_op_s3),
+    .byte_en_s3(byte_en_s3),
+    .halt_s3(halt_s3),
+    .alu_out_s3(alu_out),
+
+    .atomic_s4(atomic_s4),
+    .sel_mem_s4(sel_mem_s4),
+    .check_link_s4(check_link_s4),
+    .mem_rw_s4(mem_rw_s4),
+    .rw_s4(rw_s4),
+    .waddr_s4(waddr_s4),
+    .load_link_s4(load_link_s4),
+    .r1_data_s4(r1_data_s4),
+    .r2_data_s4(r2_data_s4),
+    .alu_imm_s4(alu_imm_s4),
+    .sign_ext_imm_s4(sign_ext_imm_s4),
+    .shamt_s4(shamt_s4),
+    .alu_op_s4(alu_op_s4),
+    .byte_en_s4(byte_en_s4),
+    .halt_s4(halt_s4),
+    .alu_out_s4(alu_out_s4)
+);
+
 
 
 
