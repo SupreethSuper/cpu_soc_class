@@ -1,6 +1,6 @@
-`include "common.vh"
-`include "instr_reg_params.vh"
-`include "regfile.sv"
+// `include "common.vh"
+// `include "instr_reg_params.vh"
+// `include "regfile.sv"
 
 module pipe_id_ex
 #(
