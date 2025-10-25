@@ -33,7 +33,7 @@ module pipe_ex_mem
     input  logic [ALU_OP_PARAM:0]   alu_op_s3,
     input  logic [3:0]              byte_en_s3,
     input  logic                    halt_s3,
-    input  logic [BITS-1:0]         alu_out_s3,  // ALU result typically goes to MEM
+    input  logic [BITS-1:0]         alu_out,  // ALU result typically goes to MEM
 
     // To MEM stage
     output logic                    atomic_s4,
@@ -88,7 +88,7 @@ always_ff @(posedge clk or negedge rst_) begin
         alu_op_s4        <= alu_op_s3;
         byte_en_s4       <= byte_en_s3;
         halt_s4          <= halt_s3;
-        alu_out_s4       <= alu_out_s3;
+        alu_out_s4       <= alu_out;
     end
 end
 

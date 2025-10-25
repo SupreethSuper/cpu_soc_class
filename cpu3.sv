@@ -205,7 +205,7 @@ pipe_ex_mem pipe_ex_mem_inst (
     .alu_op_s3(alu_op_s3),
     .byte_en_s3(byte_en_s3),
     .halt_s3(halt_s3),
-    .alu_out_s3(alu_out),
+    .alu_out(alu_out),
 
     .atomic_s4(atomic_s4),
     .sel_mem_s4(sel_mem_s4),
