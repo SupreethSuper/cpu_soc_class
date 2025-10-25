@@ -151,4 +151,45 @@ assign reg_wdata = (sel_mem) ?
         .rdata(d_mem_rdata), .clk(clk), .wdata(r2_data),
         .rw_(use_mem_rw_), .addr(alu_out), .byte_en(byte_en) );
 
+pipe_id_ex pipe_id_ex_inst (
+   .clk(clk),
+   .rst_(rst_),
+   .atomic(atomic),
+   .sel_mem(sel_mem),
+   .check_link(check_link),
+   .mem_rw_(mem_rw_),
+   .rw_(rw_),
+   .waddr(waddr),
+   .load_link_(load_link_),
+   .r1_data(r1_data),
+   .r2_data(r2_data),
+   .alu_imm(alu_imm),
+   .sign_ext_imm(sign_ext_imm),
+   .shamt(shamt),
+   .alu_op(alu_op),
+   .byte_en(byte_en),
+   .halt_s2(halt),
+
+   .atomic_s3(atomic_s3),
+   .sel_mem_s3(sel_mem_s3),
+   .check_link_s3(check_link_s3),
+   .mem_rw_s3(mem_rw_s3),
+   .rw_s3(rw_s3),
+   .waddr_s3(waddr_s3),
+   .load_link_s3(load_link_s3),
+   .r1_data_s3(r1_data_s3),
+   .r2_data_s3(r2_data_s3),
+   .alu_imm_s3(alu_imm_s3),
+   .sign_ext_imm_s3(sign_ext_imm_s3),
+   .shamt_s3(shamt_s3),
+   .alu_op_s3(alu_op_s3),
+   .byte_en_s3(byte_en_s3),
+   .halt_s3(halt_s3)
+);
+
+
+
+
+
+
 endmodule
