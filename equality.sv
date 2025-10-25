@@ -1,6 +1,6 @@
 // `include "common.vh"
 
-module equality(
+module equality #(
     parameter NUM_BITS = 32
 ) (
     input  logic [NUM_BITS - 1 : 0]  data1,       // input data

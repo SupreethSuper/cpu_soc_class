@@ -10,6 +10,8 @@ module cpu3
 
    `include "cpu_params.vh"
 
+
+
    logic [BITS-1:0]            pc_addr;      // current address
    logic [BITS-1:0]            i_mem_rdata;  // instruction memory read data
    logic [BITS-1:0]            d_mem_rdata;  // data memory read data
@@ -231,7 +233,7 @@ pipe_ex_mem pipe_ex_mem_inst (
 pipe_mem_wb #(
     .BITS(BITS),
     .REG_WORDS(REG_WORDS),
-    .ADDR_LEFT(ADDR_LEFT),
+    .ADDR_LEFT(REG_ADDR_LEFT),
     .OP_BITS(OP_BITS),
     .SHIFT_BITS(SHIFT_BITS),
     .JMP_LEFT(JMP_LEFT),
@@ -278,6 +280,17 @@ pipe_mem_wb #(
     .alu_out_s5(alu_out_s5)
 );
 
+// ====================================================================
+// EQUALITY MODULE - Added to enable fast branch resolution
+// Compares register file outputs r1_data and r2_data
+// Moved from instruction register as per lecture requirement
+// ====================================================================
+equality #(.NUM_BITS(BITS)) equality_inst (
+    .data1(r1_data),
+    .data2(r2_data),
+    .equal(equal),
+    .not_equal(not_equal)
+);
 
 
 
