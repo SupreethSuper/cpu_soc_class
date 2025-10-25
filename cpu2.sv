@@ -53,6 +53,7 @@ module cpu3
    logic link_rw_;
    logic use_mem_rw_;
    logic addr_m;
+   localparam REPL_BITS = BITS - 1;
 
    assign addr_m = (alu_out == link_addr);
    assign use_mem_rw_ = (mem_rw_ & ~ check_link) | (check_link & ~(link_valid & addr_m));	
@@ -102,7 +103,7 @@ module cpu3
        .shamt(shamt), .alu_op(alu_op), .imm(imm), .addr(addr),
        .rw_(rw_), .sel_mem(sel_mem), .alu_imm(alu_imm),
        .signed_ext(signed_ext), .byte_en(byte_en), .halt(halt),
-       .clk(clk), .load_instr(1'b1), .mem_rw_(mem_rw_), .swap(swap),
+       .clk(clk), .load_instr(1'b1), .mem_rw_(mem_rw_),
        .load_link_(load_link_), .check_link(check_link),
        .atomic(atomic), .jmp(jmp), .breq(breq), .equal(equal), 
        .brne(brne), .not_equal(not_equal),
@@ -113,7 +114,7 @@ module cpu3
 assign reg_wdata = (sel_mem) ? 
                       d_mem_rdata :
                       (atomic) ?
-                          ({{{(BITS-1)}{1'b0}}, ~link_rw_}) :
+                          ({{REPL_BITS{1'b0}}, ~link_rw_}) :
                           alu_out;
 
 
@@ -140,7 +141,7 @@ assign reg_wdata = (sel_mem) ?
    // the alu
    // does the math
    alu #( .NUM_BITS(BITS), .OP_BITS(OP_BITS), .SHIFT_BITS(SHIFT_BITS) ) alu (
-       .alu_out(alu_out), .equal(equal), .not_equal(not_equal), 
+       .alu_out(alu_out), 
        .data1(alu_in_1), .data2(alu_in_2), 
        .alu_op(alu_op), .shamt(shamt) );
 

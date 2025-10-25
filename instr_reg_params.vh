@@ -31,4 +31,5 @@ localparam SLTI  = 12'h280;
 localparam SLTIU = 12'h2C0;
 localparam SLTU  = 12'h02B;
 //new instruction HALT
-localparam HALT = 12'FC0;
+//localparam HALT = 12'FC0;
+localparam HALT  = 12'hFC0;

@@ -93,10 +93,10 @@ module instr_reg
 // Check reset, if not in reset load data
   always_ff @(posedge clk or negedge rst_) begin
 
-    if (!rst_)
+    if (!rst_ || halt)
       instr <= NOP; 
 
-    else if (stall)
+    else if (stall || halt)
       instr <= NOP;
 
     else if (load_instr)
@@ -128,7 +128,7 @@ always @ ( * )         // here for debugging
 
   assign rt_is_src = (r_type || (opcode == OP_SW || opcode == OP_BEQ || opcode == OP_BNE || opcode == OP_SC || opcode == OP_SB || opcode == OP_SH)); // to  be changed in future program
 
-  assign shamt = instr[SH_LEFT -: SHIFT_BITS]; // assigning for shamt
+  //assign shamt = instr[SH_LEFT -: SHIFT_BITS]; // assigning for shamt
 
   assign addr  = instr[JMP_LEFT:0]; // assigning for addr
 
@@ -412,7 +412,7 @@ always @ ( * )         // here for debugging
   end
     default: begin
       exception = ONE;
-      halt      = ONE;
+     // halt      = ONE;
     end
   endcase
  end
