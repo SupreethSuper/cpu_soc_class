@@ -15,15 +15,13 @@ module pipe_if_id
 
    (
 
-        input logic [BITS - 1 : 0] pc_addr_s1,
-        output logic clk_s1,
-        output logic load_instr_s1,
-        output logic [BITS -1 : 0] mem_data_s1,
-        output logic rst__s1,
-        output logic equal_s1,
-        output logic not_equal
-
-
+        input   logic  [BITS - 1 : 0] pc_addr_s1,
+        output  logic                 clk_s1,
+        output  logic                 load_instr_s1,
+        output  logic  [BITS -1 : 0]  mem_data_s1,
+        output  logic                 rst__s1,
+        output  logic                 equal_s1,
+        output  logic                 not_equal
 
    );
 
