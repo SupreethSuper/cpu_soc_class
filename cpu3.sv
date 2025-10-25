@@ -225,6 +225,58 @@ pipe_ex_mem pipe_ex_mem_inst (
     .alu_out_s4(alu_out_s4)
 );
 
+// ==============================================
+// MEM → WB Pipeline Register
+// ==============================================
+pipe_mem_wb #(
+    .BITS(BITS),
+    .REG_WORDS(REG_WORDS),
+    .ADDR_LEFT(ADDR_LEFT),
+    .OP_BITS(OP_BITS),
+    .SHIFT_BITS(SHIFT_BITS),
+    .JMP_LEFT(JMP_LEFT),
+    .IMM_LEFT(IMM_LEFT),
+    .ALU_OP_PARAM(ALU_OP_PARAM)
+) MEM_WB (
+    .clk(clk),
+    .rst_(rst_),
+
+    // ---------- Input: MEM Stage (S4) ----------
+    .atomic_s4(atomic_s4),
+    .sel_mem_s4(sel_mem_s4),
+    .check_link_s4(check_link_s4),
+    .mem_rw_s4(mem_rw_s4),
+    .rw_s4(rw_s4),
+    .waddr_s4(waddr_s4),
+    .load_link_s4(load_link_s4),
+    .r2_data_s4(r2_data_s4),
+    .r1_data_s4(r1_data_s4),
+    .alu_imm_s4(alu_imm_s4),
+    .sign_ext_imm_s4(sign_ext_imm_s4),
+    .shamt_s4(shamt_s4),
+    .alu_op_s4(alu_op_s4),
+    .byte_en_s4(byte_en_s4),
+    .halt_s4(halt_s4),
+    .alu_out_s4(alu_out_s4),
+
+    // ---------- Output: WB Stage (S5) ----------
+    .atomic_s5(atomic_s5),
+    .sel_mem_s5(sel_mem_s5),
+    .check_link_s5(check_link_s5),
+    .mem_rw_s5(mem_rw_s5),
+    .rw_s5(rw_s5),
+    .waddr_s5(waddr_s5),
+    .load_link_s5(load_link_s5),
+    .r2_data_s5(r2_data_s5),
+    .r1_data_s5(r1_data_s5),
+    .alu_imm_s5(alu_imm_s5),
+    .sign_ext_imm_s5(sign_ext_imm_s5),
+    .shamt_s5(shamt_s5),
+    .alu_op_s5(alu_op_s5),
+    .byte_en_s5(byte_en_s5),
+    .halt_s5(halt_s5),
+    .alu_out_s5(alu_out_s5)
+);
 
 
 
