@@ -10,3 +10,5 @@ localparam ALU_SLL   = 4'h8;
 localparam ALU_SRL   = 4'h9;
 localparam ALU_PASS2 = 4'hA;
 localparam ALU_SRA   = 4'hB;
+localparam ZERO	     = 1'b0;
+localparam ONE       = 1'b1;

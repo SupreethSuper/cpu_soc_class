@@ -26,9 +26,8 @@ module instr_reg
    output logic                  alu_imm,      // use immediate data for alu
    output logic                  signed_ext,   // do sign extension
    output logic [ 3:0]           byte_en,      // byte enables
-   output logic                  halt,         // stop the program
-   //swap set as comment, and set out as logic
-   //output logic                  swap,         // swap low 16 bits to high 16 bits
+   output logic                  halt,      // stop the program
+   output logic                  swap,         // swap low 16 bits to high 16 bits
    output logic                  load_link_,   // load link register
    output logic                  check_link,   // check if link register same as addr
    output logic                  atomic,       // atomic operation
@@ -63,7 +62,6 @@ module instr_reg
    localparam OP_JTYPE1 = 6'h2;
    localparam OP_JTYPE2 = 6'h3;
    localparam NOP = 32'h0000_0020;   
-   localparam SWAP_SET_SHAMT = 16;
 
   // Instruction register
    logic [BITS-1:0]         instr;             // see above!
@@ -74,12 +72,6 @@ module instr_reg
    logic [ADDR_LEFT:0]      rd;
    logic                    rt_is_src;
    logic                    stall;
-   logic                    swap;
-
-
-   // Constants used inside ALU and PC
-  localparam logic ZERO = 1'b0;
-  localparam logic ONE  = 1'b1;
 
 
   localparam OP_SW = 6'h2B;
@@ -93,10 +85,10 @@ module instr_reg
 // Check reset, if not in reset load data
   always_ff @(posedge clk or negedge rst_) begin
 
-    if (!rst_ || halt)
+    if (!rst_)
       instr <= NOP; 
 
-    else if (stall || halt)
+    else if (stall)
       instr <= NOP;
 
     else if (load_instr)
@@ -128,7 +120,7 @@ always @ ( * )         // here for debugging
 
   assign rt_is_src = (r_type || (opcode == OP_SW || opcode == OP_BEQ || opcode == OP_BNE || opcode == OP_SC || opcode == OP_SB || opcode == OP_SH)); // to  be changed in future program
 
-  //assign shamt = instr[SH_LEFT -: SHIFT_BITS]; // assigning for shamt
+  assign shamt = instr[SH_LEFT -: SHIFT_BITS]; // assigning for shamt
 
   assign addr  = instr[JMP_LEFT:0]; // assigning for addr
 
@@ -146,33 +138,30 @@ always @ ( * )         // here for debugging
   //assign waddr      = (i_type == ONE) ? rt : rd; // if itype waddr is rt, else it is rd
 
    assign waddr = (jal) ? RA_REG : (r_type) ? rd : rt;//destination
-  //swap set to shamt 16
-  assign shamt = (swap) ? SWAP_SET_SHAMT : instr[SH_LEFT -: SHIFT_BITS];
-
 
   // Decode
   always @ (*)
   begin
     // defaults
-    rw_        = 1'b1;
-    mem_rw_    = 1'b1;
+    rw_        = ONE;
+    mem_rw_    = ONE;
     alu_op     = ALU_PASS1;
-    alu_imm    = 1'b0;
-    sel_mem    = 1'b0;
-    signed_ext = 1'b0;
+    alu_imm    = ZERO;
+    sel_mem    = ZERO;
+    signed_ext = ZERO;
     byte_en    = 4'hF;
-    halt       = 1'b0;
-    swap       = 1'b0;
-    load_link_ = 1'b1;
-    check_link = 1'b0;
-    atomic     = 1'b0;
-    jmp        = 1'b0;
-    breq       = 1'b0;
-    brne       = 1'b0;
-    jal        = 1'b0;
-    jreg       = 1'b0;
-    exception  = 1'b0;
-    stall      = 1'b0;
+    swap       = ZERO;
+    load_link_ = ONE;
+    check_link = ZERO;
+    atomic     = ZERO;
+    jmp        = ZERO;
+    breq       = ZERO;
+    brne       = ZERO;
+    jal        = ZERO;
+    jreg       = ZERO;
+    exception  = ZERO;
+    stall      = ZERO;
+    halt       = ZERO;
 
    case ({opcode, funct})  // switch case getting opcode and function from instructions
    // ADD : R-Type : R[rd] = R[rs] + R[rt]
@@ -307,6 +296,7 @@ always @ ( * )         // here for debugging
     jmp = ONE;
     rw_ = ZERO;
     alu_op = ALU_PASS2;
+
   end
 
   // JR
@@ -357,10 +347,9 @@ always @ ( * )         // here for debugging
   end
 
   // LUI
-  //to be set to ALU_SLL
   LUI: begin
     rw_        = ZERO;
-    alu_op     = ALU_SLL; 
+    alu_op     = ALU_ADD; 
     alu_imm    = ONE;
     swap       = ONE;
   end
@@ -375,46 +364,49 @@ always @ ( * )         // here for debugging
   end
 
   // SH
-  SH: begin
-    mem_rw_    = ZERO;
-    alu_op     = ALU_ADD;
-    alu_imm    = ONE;
-    signed_ext = ONE;
-    byte_en    = 4'b0011;
-  end
+  SH:	begin
+    	mem_rw_    = ZERO;
+    	alu_op     = ALU_ADD;
+    	alu_imm    = ONE;
+    	signed_ext = ONE;
+    	byte_en    = 4'b0011;
+  	end
 
   // SLT
-  SLT: begin
-    rw_        = ZERO;
-    alu_op     = ALU_LTS;
-  end
+  SLT:  begin
+    	rw_        = ZERO;
+    	alu_op     = ALU_LTS;
+      	end
 
   // SLTI
   SLTI: begin
-    rw_        = ZERO;
-    alu_op     = ALU_LTS;
-    alu_imm    = ONE;
-    signed_ext = ONE;
-  end
+   	 rw_        = ZERO;
+   	 alu_op     = ALU_LTS;
+  	 alu_imm    = ONE;
+  	 signed_ext = ONE;
+  	end
 
   // SLTIU 
   SLTIU: begin
-    rw_        = ZERO;
-    alu_op     = ALU_LTU;
-    alu_imm    = ONE;
-    signed_ext = ONE;
-  end
+   	 rw_        = ZERO;
+   	 alu_op     = ALU_LTU;
+   	 alu_imm    = ONE;
+    	 signed_ext = ONE;
+  	 end
 
   // SLTU
   SLTU: begin
-    rw_        = ZERO;
-    alu_op     = ALU_LTU;
-  end
+    	rw_        = ZERO;
+    	alu_op     = ALU_LTU;
+  	end
+  HALT: begin
+	halt = ONE;
+	end 
     default: begin
       exception = ONE;
-     // halt      = ONE;
     end
   endcase
  end
 
 endmodule
+

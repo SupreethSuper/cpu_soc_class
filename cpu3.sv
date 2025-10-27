@@ -1,5 +1,5 @@
 // the top level cpu 
-module cpu3
+module cpu3 
    (
    output logic      halt,      // halt signal to end simulation
    output logic      exception, // the exception interupt signal
@@ -9,8 +9,6 @@ module cpu3
    );
 
    `include "cpu_params.vh"
-
-
 
    logic [BITS-1:0]            pc_addr;      // current address
    logic [BITS-1:0]            i_mem_rdata;  // instruction memory read data
@@ -35,8 +33,7 @@ module cpu3
    logic [BITS-1:0]            sign_ext_imm; // immediate data that has been sign extended
    logic                       signed_ext;   // whether or not to extend the sign bit
    logic [ 3:0]                byte_en;      // byte enables
-
-   //logic                       swap;         // swap low 16 bits to high 16 bits
+   logic                       swap;         // swap low 16 bits to high 16 bits
    logic                       load_link_;   // load the link register
    logic                       check_link;   // check if link register is same as address
    logic                       atomic;       // force value to 0 or 1 for atomic operation
@@ -55,7 +52,47 @@ module cpu3
    logic link_rw_;
    logic use_mem_rw_;
    logic addr_m;
-   localparam REPL_BITS = BITS - 1;
+
+	logic 			halt_s2;
+
+   	logic 			atomic_s3;
+	logic 			sel_mem_s3;
+    	logic			check_link_s3;
+	logic			mem_rw_s3;
+	logic			rw_s3;
+	logic [REG_ADDR_LEFT:0] waddr_s3;
+	logic 			load_link_s3;
+	logic [BITS-1:0]	r2_data_s3;
+	logic [BITS-1:0]	r1_data_s3;
+	logic			alu_imm_s3;
+	logic [BITS-1:0]	sign_ext_imm_s3;
+	logic [SHIFT_BITS-1:0]	shamt_s3;
+	logic [OP_BITS-1:0] 	alu_op_s3;
+	logic [3:0]		byte_en_s3;
+	logic			halt_s3;
+
+	logic [BITS-1:0]	alu_out_s4;
+	logic 			atomic_s4;
+	logic 			sel_mem_s4;
+    	logic			check_link_s4;
+	logic			mem_rw_s4;
+	logic			rw_s4;
+	logic [REG_ADDR_LEFT:0] waddr_s4;
+	logic 			load_link_s4;
+	logic [BITS-1:0]	r2_data_s4;
+	logic [3:0]		byte_en_s4;
+	logic			halt_s4;
+
+	logic [BITS-1:0]	alu_out_s5; 			
+	logic 			atomic_s5;
+	logic 			sel_mem_s5;
+    	logic [BITS-1:0]	d_mem_rdata_s5;
+	logic			link_rw_s5;
+	logic			rw_s5;
+	logic [REG_ADDR_LEFT:0] waddr_s5;
+	logic [3:0]		byte_en_s5;
+	logic			halt_s5;
+
 
    assign addr_m = (alu_out == link_addr);
    assign use_mem_rw_ = (mem_rw_ & ~ check_link) | (check_link & ~(link_valid & addr_m));	
@@ -104,8 +141,8 @@ module cpu3
        .jal(jal), .jreg(jreg), .exception(exception),
        .shamt(shamt), .alu_op(alu_op), .imm(imm), .addr(addr),
        .rw_(rw_), .sel_mem(sel_mem), .alu_imm(alu_imm),
-       .signed_ext(signed_ext), .byte_en(byte_en), .halt(halt),
-       .clk(clk), .load_instr(1'b1), .mem_rw_(mem_rw_),
+       .signed_ext(signed_ext), .byte_en(byte_en), .halt(halt_s2),
+       .clk(clk), .load_instr(1'b1), .mem_rw_(mem_rw_), .swap(swap),
        .load_link_(load_link_), .check_link(check_link),
        .atomic(atomic), .jmp(jmp), .breq(breq), .equal(equal), 
        .brne(brne), .not_equal(not_equal),
@@ -113,12 +150,10 @@ module cpu3
 
    // select the data to write to the register file:
 
-assign reg_wdata = (sel_mem) ? 
-                      d_mem_rdata :
-                      (atomic) ?
-                          ({{REPL_BITS{1'b0}}, ~link_rw_}) :
-                          alu_out;
-
+     assign reg_wdata = (sel_mem)   ? d_mem_rdata :
+                         (atomic)   ? ({{{(BITS-1)}{1'b0}}, ~link_rw_}) :
+			(swap) ? {alu_out[15:0], alu_out[31:16]} :
+                         alu_out;
 
 
    // the register file
@@ -143,7 +178,7 @@ assign reg_wdata = (sel_mem) ?
    // the alu
    // does the math
    alu #( .NUM_BITS(BITS), .OP_BITS(OP_BITS), .SHIFT_BITS(SHIFT_BITS) ) alu (
-       .alu_out(alu_out), 
+       .alu_out(alu_out), .equal(equal), .not_equal(not_equal), 
        .data1(alu_in_1), .data2(alu_in_2), 
        .alu_op(alu_op), .shamt(shamt) );
 
@@ -152,147 +187,37 @@ assign reg_wdata = (sel_mem) ?
    memory #( .BASE_ADDR(D_MEM_BASE_ADDR), .BITS(BITS), .WORDS(D_MEM_WORDS) ) d_memory (
         .rdata(d_mem_rdata), .clk(clk), .wdata(r2_data),
         .rw_(use_mem_rw_), .addr(alu_out), .byte_en(byte_en) );
+	//stage 3 pipelining instanciation.
+  pipe_id_ex #( .BITS(BITS), .REG_WORDS(REG_WORDS), .OP_BITS(OP_BITS), .SHIFT_BITS(SHIFT_BITS), .JMP_LEFT(JMP_LEFT) )
+	 pipe_id__ex(.clk(clk),.rst_(rst_),.atomic(atomic),.sel_mem(sel_mem),.check_link(check_link),
+	.mem_rw_(mem_rw_),.rw_(rw_),.waddr_(waddr),.load_link_(load_link_),.r2_data(r2_data),.r1_data(r1_data),
+	.alu_imm(alu_imm),.sign_ext_imm(sign_ext_imm),.shamt(shamt),.alu_op(alu_op),.byte_en(byte_en),.halt_s2(halt_s2), 	// stage3_inputs
 
-pipe_id_ex pipe_id_ex_inst (
-   .clk(clk),
-   .rst_(rst_),
-   .atomic(atomic),
-   .sel_mem(sel_mem),
-   .check_link(check_link),
-   .mem_rw_(mem_rw_),
-   .rw_(rw_),
-   .waddr(waddr),
-   .load_link_(load_link_),
-   .r1_data(r1_data),
-   .r2_data(r2_data),
-   .alu_imm(alu_imm),
-   .sign_ext_imm(sign_ext_imm),
-   .shamt(shamt),
-   .alu_op(alu_op),
-   .byte_en(byte_en),
-   .halt_s2(halt),
+	.atomic_s3(atomic_s3),.sel_mem_s3(sel_mem_s3),.check_link_s3(check_link_s3),.mem_rw_s3(mem_rw_s3),.rw_s3(rw_s3),
+	.waddr_s3(waddr_s3),.load_link_s3(load_link_s3),.r2_data_s3(r2_data_s3),.r1_data_s3(r1_data_s3),.alu_imm_s3(alu_imm_s3),
+	.sign_ext_imm_s3(sign_ext_imm_s3),.shamt_s3(shamt_s3),.alu_op_s3(alu_op_s3),.byte_en_s3(byte_en_s3),.halt_s3(halt_s3)); //stage3_outputs
 
-   .atomic_s3(atomic_s3),
-   .sel_mem_s3(sel_mem_s3),
-   .check_link_s3(check_link_s3),
-   .mem_rw_s3(mem_rw_s3),
-   .rw_s3(rw_s3),
-   .waddr_s3(waddr_s3),
-   .load_link_s3(load_link_s3),
-   .r1_data_s3(r1_data_s3),
-   .r2_data_s3(r2_data_s3),
-   .alu_imm_s3(alu_imm_s3),
-   .sign_ext_imm_s3(sign_ext_imm_s3),
-   .shamt_s3(shamt_s3),
-   .alu_op_s3(alu_op_s3),
-   .byte_en_s3(byte_en_s3),
-   .halt_s3(halt_s3)
-);
+  pipe_ex_mem #(.BITS(BITS), .REG_WORDS(REG_WORDS)) 		
+	pipe_ex_mem(.clk(clk),.rst_(rst_),.alu_out(alu_out),.atomic_s3(atomic_s3),.sel_mem_s3(sel_mem_s3),
+	.check_link_s3(check_link_s3),.mem_rw_s3(mem_rw_s3),.rw_s3(rw_s3),.waddr_s3(waddr_s3),
+	.load_link_s3(load_link_s3),.r2_data_s3(r2_data_s3),.byte_en_s3(byte_en_s3),.halt_s3(halt_s3), 				// stage4_inputs
 
-pipe_ex_mem pipe_ex_mem_inst (
-    .clk(clk),
-    .rst_(rst_),
-    .atomic_s3(atomic_s3),
-    .sel_mem_s3(sel_mem_s3),
-    .check_link_s3(check_link_s3),
-    .mem_rw_s3(mem_rw_s3),
-    .rw_s3(rw_s3),
-    .waddr_s3(waddr_s3),
-    .load_link_s3(load_link_s3),
-    .r1_data_s3(r1_data_s3),
-    .r2_data_s3(r2_data_s3),
-    .alu_imm_s3(alu_imm_s3),
-    .sign_ext_imm_s3(sign_ext_imm_s3),
-    .shamt_s3(shamt_s3),
-    .alu_op_s3(alu_op_s3),
-    .byte_en_s3(byte_en_s3),
-    .halt_s3(halt_s3),
-    .alu_out(alu_out),
+	.alu_out_s4(alu_out_s4),.atomic_s4(atomic_s4),.sel_mem_s4(sel_mem_s4),.check_link_s4(check_link_s4),
+	.mem_rw_s4(mem_rw_s4),.rw_s4(rw_s4),.waddr_s4(waddr_s4),.load_link_s4(load_link_s4),.r2_data_s4(r2_data_s4),
+	.byte_en_s4(byte_en_s4),.halt_s4(halt_s4)); 										//stage4_outputs
 
-    .atomic_s4(atomic_s4),
-    .sel_mem_s4(sel_mem_s4),
-    .check_link_s4(check_link_s4),
-    .mem_rw_s4(mem_rw_s4),
-    .rw_s4(rw_s4),
-    .waddr_s4(waddr_s4),
-    .load_link_s4(load_link_s4),
-    .r1_data_s4(r1_data_s4),
-    .r2_data_s4(r2_data_s4),
-    .alu_imm_s4(alu_imm_s4),
-    .sign_ext_imm_s4(sign_ext_imm_s4),
-    .shamt_s4(shamt_s4),
-    .alu_op_s4(alu_op_s4),
-    .byte_en_s4(byte_en_s4),
-    .halt_s4(halt_s4),
-    .alu_out_s4(alu_out_s4)
-);
+  pipe_mem_wb #(.BITS(BITS), .REG_WORDS(REG_WORDS))
+	pipe_mem_wb(.clk(clk),.rst_(rst_),.alu_out_s4(alu_out_s4),.atomic_s4(atomic_s4),.sel_mem_s4(sel_mem_s4),
+	.d_mem_rdata(d_mem_rdata),.link_rw_(link_rw_),.rw_s4(rw_s4),.waddr_s4(waddr_s4),
+	.byte_en_s4(byte_en_s4),.halt_s4(halt_s4), 										// stage5_inputs
 
-// ==============================================
-// MEM → WB Pipeline Register
-// ==============================================
-pipe_mem_wb #(
-    .BITS(BITS),
-    .REG_WORDS(REG_WORDS),
-    .ADDR_LEFT(REG_ADDR_LEFT),
-    .OP_BITS(OP_BITS),
-    .SHIFT_BITS(SHIFT_BITS),
-    .JMP_LEFT(JMP_LEFT),
-    .IMM_LEFT(IMM_LEFT),
-    .ALU_OP_PARAM(ALU_OP_PARAM)
-) MEM_WB (
-    .clk(clk),
-    .rst_(rst_),
+	.alu_out_s5(alu_out_s5),.atomic_s5(atomic_s5),.sel_mem_s5(sel_mem_s5),.link_rw_s5(link_rw_s5),
+	.d_mem_rdata_s5(d_mem_rdata_s5),.rw_s5(rw_s5),.waddr_s5(waddr_s5),
+	.byte_en_s5(byte_en_s5),.halt_s5(halt_s5)); 										// stage 5_outputs
 
-    // ---------- Input: MEM Stage (S4) ----------
-    .atomic_s4(atomic_s4),
-    .sel_mem_s4(sel_mem_s4),
-    .check_link_s4(check_link_s4),
-    .mem_rw_s4(mem_rw_s4),
-    .rw_s4(rw_s4),
-    .waddr_s4(waddr_s4),
-    .load_link_s4(load_link_s4),
-    .r2_data_s4(r2_data_s4),
-    .r1_data_s4(r1_data_s4),
-    .alu_imm_s4(alu_imm_s4),
-    .sign_ext_imm_s4(sign_ext_imm_s4),
-    .shamt_s4(shamt_s4),
-    .alu_op_s4(alu_op_s4),
-    .byte_en_s4(byte_en_s4),
-    .halt_s4(halt_s4),
-    .alu_out_s4(alu_out_s4),
-
-    // ---------- Output: WB Stage (S5) ----------
-    .atomic_s5(atomic_s5),
-    .sel_mem_s5(sel_mem_s5),
-    .check_link_s5(check_link_s5),
-    .mem_rw_s5(mem_rw_s5),
-    .rw_s5(rw_s5),
-    .waddr_s5(waddr_s5),
-    .load_link_s5(load_link_s5),
-    .r2_data_s5(r2_data_s5),
-    .r1_data_s5(r1_data_s5),
-    .alu_imm_s5(alu_imm_s5),
-    .sign_ext_imm_s5(sign_ext_imm_s5),
-    .shamt_s5(shamt_s5),
-    .alu_op_s5(alu_op_s5),
-    .byte_en_s5(byte_en_s5),
-    .halt_s5(halt_s5),
-    .alu_out_s5(alu_out_s5)
-);
-
-// ====================================================================
-// EQUALITY MODULE - Added to enable fast branch resolution
-// Compares register file outputs r1_data and r2_data
-// Moved from instruction register as per lecture requirement
-// ====================================================================
-equality #(.NUM_BITS(BITS)) equality_inst (
-    .data1(r1_data),
-    .data2(r2_data),
-    .equal(equal),
-    .not_equal(not_equal)
-);
-
+	assign halt = halt_s5; //the final halt of the stage 5 of the pipeline is given to the halt
 
 
 
 endmodule
+
