@@ -9,7 +9,7 @@
 	input [BITS-1:0]	alu_out,
 	input 			atomic_s3,
 	input 			sel_mem_s3,
-    	input			check_link_s3,
+    input			check_link_s3,
 	input			mem_rw_s3,
 	input			rw_s3,
 	input [ADDR_LEFT:0] 	waddr_s3,
