@@ -1,5 +1,5 @@
 // test bench for the cpu
-module top_cpu3();
+module top_cpu4();
 
    //logic [31:0] rdata;
    logic        halt;
@@ -106,7 +106,7 @@ module top_cpu3();
     assign m_mem23 = cpu3.i_memory.mem[23]; //
     assign m_mem24 = cpu3.i_memory.mem[24];
 
-   cpu3 cpu3( .halt(halt), .exception(exception), .clk(clk), .rst_(rst_) );
+   cpu4 cpu4( .halt(halt), .exception(exception), .clk(clk), .rst_(rst_) );
    initial // read the array to load the program
    begin
      $readmemh("i_mem_vals.txt",cpu3.i_memory.mem); // loading the memory
@@ -159,9 +159,9 @@ module top_cpu3();
         $display("regfile %d is %h",index,cpu3.regfile.mem[index]);
   end
 
-  //initial
-  //begin
-  //  $dumpfile("cpu_waves.vcd");      // dump the waves to view on your laptop
-  //  $dumpvars(0,top_cpu);
-  //end
+  initial
+  begin
+   $dumpfile("cpu_waves.vcd");      // dump the waves to view on your laptop
+   $dumpvars(0,top_cpu);
+  end
 endmodule

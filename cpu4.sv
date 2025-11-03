@@ -1,5 +1,5 @@
 // the top level cpu 
-module cpu3 
+module cpu4 
    (
    output logic      halt,      // halt signal to end simulation
    output logic      exception, // the exception interupt signal
