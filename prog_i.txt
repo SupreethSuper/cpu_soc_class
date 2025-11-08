@@ -1,5 +1,5 @@
-00000000      // address 0x0
-00000000      // address 0x1
+21284000     // address 0x0
+FC000000     // address 0x1
 00000000      // address 0x2
 00000000      // address 0x3
 00000000      // address 0x4
