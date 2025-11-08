@@ -190,6 +190,8 @@ module cpu4 (
    );
 
 
+
+
    //---------------------------------------------------
    // Register Write Data Selection
    //---------------------------------------------------
@@ -376,6 +378,15 @@ module cpu4 (
       .byte_en_s5(byte_en_s5),
       .halt_s5(halt_s5)
    );
+
+// Forwarding unit
+forward forward_unit (
+    .r1_addr_s3 (r1_addr_s3),   // from pipe_id_ex
+    .r2_addr_s3 (r2_addr_s3),   // from pipe_id_ex
+    .rw_s4      (rw_s4),        // write enable from EX/MEM or MEM/WB
+    .waddr_s4   (waddr_s4)      // destination register of stage 4
+);
+
 
    //---------------------------------------------------
    // Final Halt

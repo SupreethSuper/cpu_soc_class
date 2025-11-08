@@ -8,10 +8,21 @@ module forward #(
 
 input logic [ADDR_LEFT : 0] r1_addr_s3,
 input logic [ADDR_LEFT : 0] r2_addr_s3,
-input logic rw_s4,
-input logic [ADDR_LEFT] waddr_s4,
+input logic                 rw_s4,
+input logic [ADDR_LEFT]     waddr_s4
 );
 
+always begin
+
+// Forward ALU output to r1 if matches and not writing to $zero
+    if (rw_s4 && (waddr_s4 != 0) && (r1_addr_s3 == waddr_s4))
+        r1_data_s3 = alu_out_s4;
+
+
+// Forward ALU output to r2 if matches and not writing to $zero
+    if (rw_s4 && (waddr_s4 != 0) && (r2_addr_s3 == waddr_s4))
+        r2_addr_s3 = alu_out_s4;
+end
 
 
 
