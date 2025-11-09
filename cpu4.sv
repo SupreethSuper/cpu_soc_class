@@ -299,6 +299,8 @@ module cpu4 (
       .alu_op(alu_op),
       .byte_en(byte_en),
       .halt_s2(halt_s2),
+      .r1_addr(r1_addr),
+      .r2_addr(r2_addr),
 
       .atomic_s3(atomic_s3),
       .sel_mem_s3(sel_mem_s3),
@@ -314,7 +316,9 @@ module cpu4 (
       .shamt_s3(shamt_s3),
       .alu_op_s3(alu_op_s3),
       .byte_en_s3(byte_en_s3),
-      .halt_s3(halt_s3)
+      .halt_s3(halt_s3),
+      .r1_addr_s3(r1_addr_s3),
+      .r2_addr_s3(r2_addr_s3)
    );
 
 

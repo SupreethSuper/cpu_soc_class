@@ -1,0 +1,48 @@
+
+012A4020      // address 0x0: add   $t0 $t1 $t2
+21280005      // address 0x1: addi  $t0 $t1 val1
+24080005      // address 0x2: addiu $t0 $zero val1
+012A4021      // address 0x3: addu  $t0 $t1 $t2
+012A8024      // address 0x4: and   $s0 $t1 $t2
+31310005      // address 0x5: andi  $s1 $t1 val1
+1109001C      // address 0x6: beq   $t0 $t1 ifeq
+1612001E      // address 0x7: bne   $s0 $s2 ifneq
+8D0B0005      // address 0x8: lw    $t3 $t0 val1
+01208827      // address 0x9: nor   $s1 $t1 $zero
+016C9025      // address 0xA: or    $s2 $t3 $t4
+3408000A      // address 0xB: ori   $t0 $zero val2
+00128840      // address 0xC: sll   $s1 $s2 1
+00099842      // address 0xD: srl   $s3 $t1 1
+AD09000A      // address 0xE: sw    $t0 $t1 val2
+01404822      // address 0xF: sub   $t1 $t2 $zero
+01EB4823      // address 0x10: subu  $t1 $t7 $t3
+00062843      // address 0x11: sra   $a1 $a2 1
+20080005      // address 0x12: addi $t0, $zero, 5
+0800002A      // address 0x13: j   target
+21080001      // address 0x14: addi $t0, $t0, 1
+0C000028      // address 0x15: jal func
+200A0014      // address 0x16: addi $t2 $zero 20
+03E00008      // address 0x17: jr    $ra
+91150001      // address 0x18: lbu   $s5 $t0 0x01
+96280001      // address 0x19: lhu   $t0 $s1 0x01
+C2690001      // address 0x1A: ll    $t1 $s3 0x01
+3C0A1234      // address 0x1B: lui   $t2 0x1234
+A1750001      // address 0x1C: sb    $t3 $s5  0x01
+E1350001      // address 0x1D: sc    $t1 $s5 0x01
+A5A80001      // address 0x1E: sh    $t5 $t0 0x01
+012A402A      // address 0x1F: slt   $t0, $t1, $t2
+298B000A      // address 0x20: slti  $t3, $t4, 10
+2DCD0014      // address 0x21: sltiu $t5, $t6, 20
+0319782B      // address 0x22: sltu  $t7, $t8, $t9
+02328020      // address 0x23: add   $s0 $s1 $s2
+2128000A      // address 0x24: addi  $t0 $t1 val2
+2408000A      // address 0x25: addiu $t0 $zero val2
+02939020      // address 0x26: add   $s2 $s4 $s3
+2230000A      // address 0x27: addi  $s0 $s1 val2
+2009000A      // address 0x28:     addi $t1, $zero, 10
+03E00008      // address 0x29:     jr   $ra
+2009000A      // address 0x2A:     addi $t1, $zero, 10
+00000000      // address 0x2B
+00000000      // address 0x2C
+00000000      // address 0x2D
+00000000      // address 0x2E
