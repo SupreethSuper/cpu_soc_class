@@ -1,5 +1,5 @@
-014B4820     // address 0x0
-012C4820     // address 0x1
+8C100000     // address 0x0
+02000008     // address 0x1
 FC000000     // address 0x1
 00000000      // address 0x2
 00000000      // address 0x3
@@ -1021,5 +1021,3 @@ FC000000     // address 0x1
 00000000      // address 0x3FB
 00000000      // address 0x3FC
 00000000      // address 0x3FD
-00000000      // address 0x3FE
-00000000      // address 0x3FF

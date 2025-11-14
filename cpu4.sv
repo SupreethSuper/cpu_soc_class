@@ -83,6 +83,20 @@ module cpu4 (
    logic                   halt_s5;
 
 
+// -------------------------------------------------------
+// Forwarding-related pipeline signals
+// -------------------------------------------------------
+logic [REG_ADDR_LEFT:0] r1_addr_s3, r2_addr_s3;  // From pipe_id_ex
+
+logic [BITS-1:0] r1_fwd_s4, r2_fwd_s4;
+logic [BITS-1:0] r1_fwd_s5, r2_fwd_s5;
+logic [BITS-1:0] r1_fwd_s6, r2_fwd_s6;
+logic [BITS-1:0] j_fwd_s4, j_fwd_s5;
+logic [BITS-1:0] b_r1_fwd_s4, b_r2_fwd_s4;
+logic [BITS-1:0] b_r1_fwd_s5, b_r2_fwd_s5;
+logic stall_pipe;
+
+
    //---------------------------------------------------
    // Link handling logic
    //---------------------------------------------------
@@ -111,7 +125,7 @@ module cpu4 (
    //---------------------------------------------------
    // Program Counter
    //---------------------------------------------------
-   pc #(
+    pc #(
       .BITS(BITS)
    ) pc (
       .pc_addr(pc_addr),
@@ -119,7 +133,7 @@ module cpu4 (
       .addr(addr),
       .rst_(rst_),
       .jmp(jmp),
-      .load_instr(1'b1),
+      .load_instr(~stall_pipe),    // <-- allow stall to freeze PC
       .sign_ext_imm(sign_ext_imm),
       .equal(equal),
       .not_equal(not_equal),
